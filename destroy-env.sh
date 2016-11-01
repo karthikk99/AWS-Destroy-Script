@@ -7,7 +7,7 @@ echo ""
 echo "Collecting all the 4 instances in running status........"
 instances=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Placement.AvailabilityZone, State.Name, InstanceId]' --output text | grep us-west-2b | grep 'running' | awk '{print $3}')
 
-autoscalinggroup=$(aws autoscaling describe-auto-scaling-instances --query '')
+autoscalinggroup=$(aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[0].AutoScalingGroupName')
 
 # detach all the instances from the auto scaling group
 echo ""
@@ -21,7 +21,8 @@ aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $autoscaling
 echo ""
 echo "Auto-scaling group deleted successfully!"
 
-launchconfig=$(aws autoscaling describe-launch-configurations --query '')
+launchconfig=$(aws autoscaling describe-launch-configurations --query 'LaunchConfigurations[*].LaunchConfigurationName')
+
 # aws autoscaling delete-launch configuration
 echo ""
 echo "Deleting launch configuration..............."
@@ -29,7 +30,8 @@ aws autoscaling delete-launch-configuration --launch-configuration-name $launchc
 echo ""
 echo "Launch Configuration deleted successfully!"
 
-loadbalancer=$(aws elb describe-load-balancers --query '')
+loadbalancer=$(aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName')
+
 #deregister instances
 echo ""
 echo "Deregistering the instances from the load-balancer MY-LOAD-BALANCER......"
